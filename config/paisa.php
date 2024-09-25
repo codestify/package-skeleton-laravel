@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default'  => 'stripe',
+    'default'  => 'paypal',
     'gateways' => [
         'stripe'     => [
             'secret_key'      => env('STRIPE_SECRET_KEY'),

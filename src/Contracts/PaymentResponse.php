@@ -19,20 +19,6 @@ interface PaymentResponse
     public function getTransactionId(): ?string;
 
     /**
-     * Returns the amount of the transaction
-     *
-     * @return float|null
-     */
-    public function getAmount(): ?float;
-
-    /**
-     * Returns the currency of the transaction
-     *
-     * @return string|null
-     */
-    public function getCurrency(): ?string;
-
-    /**
      * Returns any message associated with the response
      *
      * @return string|null
