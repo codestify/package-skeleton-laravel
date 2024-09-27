@@ -2,9 +2,9 @@
 
 namespace Manza\Paisa;
 
+use Manza\Paisa\Commands\PaisaCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Manza\Paisa\Commands\PaisaCommand;
 
 class PaisaServiceProvider extends PackageServiceProvider
 {

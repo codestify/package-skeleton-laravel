@@ -15,7 +15,6 @@ class PaymentManager extends Manager
 
     public function createPaypalDriver(): PaymentGateway
     {
-        return new PaypalGateway();
+        return new PaypalGateway;
     }
-
 }

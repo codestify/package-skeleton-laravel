@@ -2,88 +2,97 @@
 
 namespace Manza\Paisa\PaymentGateways\Paypal;
 
-use Manza\Paisa\Contracts\PaymentGateway;
-use Manza\Paisa\Contracts\PaymentResponse;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\AuthorizeOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureAuthorizePaymentRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CreateOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\FetchTransactionRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\GetOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\RefundRequest;
+use Omnipay\Common\AbstractGateway;
+use Omnipay\Common\Http\ClientInterface;
+use Omnipay\Common\Message\AbstractRequest;
+use Omnipay\Common\Message\RequestInterface;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
-use Omnipay\Omnipay;
-use Omnipay\PayPal\RestGateway;
-
-final class PaypalGateway implements PaymentGateway
+final class PaypalGateway extends AbstractGateway
 {
-    protected RestGateway $gateway;
-
-    public function __construct()
+    public function __construct(ClientInterface $httpClient = null, HttpRequest $httpRequest = null)
     {
-        $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId(config('services.paypal.client_id'));
-        $this->gateway->setSecret(config('services.paypal.secret'));
-        $this->gateway->setTestMode(config('services.paypal.sandbox'));
+        parent::__construct($httpClient, $httpRequest);
+        $this->initialize([
+            'clientId' => config('paisa.gateways.paypal.client_id'),
+            'secret' => config('paisa.gateways.paypal.client_secret'),
+            'testMode' => config('paisa.gateways.paypal.sandbox'),
+        ]);
     }
 
-    public function initialize(array $parameters): self
+    public function getName(): string
     {
-        foreach ($parameters as $key => $value) {
-            $this->gateway->setParameter($key, $value);
-        }
-        return $this;
+        return 'PayPal REST V2';
     }
 
-    public function purchase(float $amount, array $parameters): PaymentResponse
+    public function getDefaultParameters(): array
     {
-        $response = $this->gateway->purchase([
-            'amount' => $amount,
-            'currency' => $parameters['currency'] ?? 'GBP',
-            'description' => $parameters['description'] ?? '',
-            'returnUrl' => $parameters['returnUrl'],
-            'cancelUrl' => $parameters['cancelUrl'],
-        ])->send();
-
-        return new PaypalResponse($response);
+        return [
+            'clientId' => '',
+            'secret' => '',
+            'testMode' => false,
+        ];
     }
 
-    public function authorize(float $amount, array $parameters): PaymentResponse
+    public function getClientId()
     {
-        $response = $this->gateway->authorize([
-            'amount' => $amount,
-            'currency' => $parameters['currency'] ?? 'GBP',
-            'description' => $parameters['description'] ?? '',
-            'returnUrl' => $parameters['returnUrl'],
-            'cancelUrl' => $parameters['cancelUrl'],
-        ])->send();
-
-        return new PaypalResponse($response);
+        return $this->getParameter('clientId');
     }
 
-    public function capture(float $amount, string $transactionId, array $parameters): PaymentResponse
+    public function setClientId($value): PaypalGateway
     {
-        $response = $this->gateway->capture([
-            'amount' => $amount,
-            'currency' => $parameters['currency'] ?? 'USD',
-            'transactionReference' => $transactionId,
-        ])->send();
-
-        return new PaypalResponse($response);
+        return $this->setParameter('clientId', $value);
     }
 
-    public function refund(float $amount, array $parameters): PaymentResponse
+    public function getSecret()
     {
-        $response = $this->gateway->refund([
-            'amount' => $amount,
-            'currency' => $parameters['currency'] ?? 'USD',
-            'transactionReference' => $parameters['transactionId'],
-        ])->send();
-
-        return new PaypalResponse($response);
+        return $this->getParameter('secret');
     }
 
-    public function void(array $parameters): PaymentResponse
+    public function setSecret($value): PaypalGateway
     {
-        $response = $this->gateway->void([
-            'transactionReference' => $parameters['transactionId'],
-        ])->send();
-
-        return new PaypalResponse($response);
+        return $this->setParameter('secret', $value);
     }
 
+    public function purchase(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CreateOrderRequest::class, $options);
+    }
+
+    public function completePurchase(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CaptureOrderRequest::class, $options);
+    }
+
+    public function authorize(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(AuthorizeOrderRequest::class, $options);
+    }
+
+    public function capture(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CaptureAuthorizePaymentRequest::class, $options);
+    }
+
+    public function refund(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(RefundRequest::class, $options);
+    }
+
+    public function fetchTransaction(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(FetchTransactionRequest::class, $options);
+    }
+
+    public function getOrderDetails(array $options = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(GetOrderRequest::class, $options);
+    }
 }
-
