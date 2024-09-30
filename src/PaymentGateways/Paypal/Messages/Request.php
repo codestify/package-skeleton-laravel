@@ -33,18 +33,16 @@ abstract class Request extends OmnipayAbstractRequest
 
     public function sendData($data): ResponseInterface|Response
     {
+        ray([
+            'method' => $this->getHttpMethod(),
+            'uri' => $this->getEndpoint().$this->getEndpointPath(),
+            'headers' => [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer '.$this->getAccessToken(),
+            ],
+            'body' => $data,
+        ]);
         try {
-            ray([
-                'url' => $this->getEndpoint().$this->getEndpointPath(),
-                'method' => $this->getHttpMethod(),
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer '.$this->getAccessToken(),
-                ],
-                'body' => $this->isDataValid($data) ? json_encode($data) : null,
-            ]);
-
-
             $httpResponse = $this->httpClient->request(
                 method: $this->getHttpMethod(),
                 uri: $this->getEndpoint().$this->getEndpointPath(),
@@ -61,7 +59,7 @@ abstract class Request extends OmnipayAbstractRequest
             );
         }
 
-        return $this->createResponse($httpResponse->getBody()->getContents(), $httpResponse->getStatusCode());
+        return $this->createResponse($this->decodeResponse($httpResponse), $httpResponse->getStatusCode());
     }
 
     protected function getEndpoint()
@@ -100,8 +98,7 @@ abstract class Request extends OmnipayAbstractRequest
                 body: $body
             );
 
-            // Decode the JSON response from PayPal
-            $response = json_decode($httpResponse->getBody()->getContents(), true);
+            $response = $this->decodeResponse($httpResponse);
 
             if ( ! isset($response['access_token'])) {
                 throw new InvalidRequestException('Unable to obtain access token from PayPal. Response: '.json_encode($response));
@@ -125,5 +122,15 @@ abstract class Request extends OmnipayAbstractRequest
     protected function isDataValid($data): bool
     {
         return isset($data) && ( ! is_array($data) || ! empty($data));
+    }
+
+    /**
+     * @param  \Psr\Http\Message\ResponseInterface  $httpResponse
+     *
+     * @return mixed|ResponseInterface
+     */
+    public function decodeResponse(\Psr\Http\Message\ResponseInterface $httpResponse): mixed
+    {
+        return json_decode($httpResponse->getBody()->getContents(), true);
     }
 }

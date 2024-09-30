@@ -6,8 +6,12 @@ use Manza\Paisa\PaymentGateways\Paypal\Messages\AuthorizeOrderRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureAuthorizePaymentRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureOrderRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\CreateOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CreatePlanRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CreateProductRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\CreateSubscriptionRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\FetchTransactionRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\GetOrderRequest;
+use Manza\Paisa\PaymentGateways\Paypal\Messages\GetSubscriptionRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\RefundRequest;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Http\ClientInterface;
@@ -61,6 +65,16 @@ final class PaypalGateway extends AbstractGateway
         return $this->setParameter('secret', $value);
     }
 
+    public function getTestMode()
+    {
+        return $this->getParameter('testMode');
+    }
+
+    public function setTestMode($value): PaypalGateway
+    {
+        return $this->setParameter('testMode', $value);
+    }
+
     public function purchase(array $options = []): RequestInterface|AbstractRequest
     {
         return $this->createRequest(CreateOrderRequest::class, $options);
@@ -94,5 +108,25 @@ final class PaypalGateway extends AbstractGateway
     public function getOrderDetails(array $options = []): RequestInterface|AbstractRequest
     {
         return $this->createRequest(GetOrderRequest::class, $options);
+    }
+
+    public function createPlan(array $options = array()): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CreatePlanRequest::class, $options);
+    }
+
+    public function createSubscription(array $parameters = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CreateSubscriptionRequest::class, $parameters);
+    }
+
+    public function getSubscription(array $parameters = []): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(GetSubscriptionRequest::class, $parameters);
+    }
+
+    public function createProduct(array $options = array()): RequestInterface|AbstractRequest
+    {
+        return $this->createRequest(CreateProductRequest::class, $options);
     }
 }

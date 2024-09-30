@@ -11,7 +11,6 @@ class Response extends AbstractResponse
 
     public function __construct(RequestInterface $request, $data, $statusCode = 200)
     {
-        $data = is_array($data) ? $data : json_decode($data, true);
         parent::__construct($request, $data);
         $this->statusCode = $statusCode;
     }
