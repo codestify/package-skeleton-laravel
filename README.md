@@ -17,13 +17,6 @@ Paisa is a powerful, intuitive Laravel package that simplifies multi-gateway pay
 - Laravel-friendly design with easy configuration
 
 Streamline your payment processing with Paisa and experience the flow of effortless transactions in your Laravel applications.
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/paisa.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/paisa)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
 
 ## Installation
 
@@ -50,44 +43,63 @@ This is the contents of the published config file:
 
 ```php
 return [
+    'default' => 'paypal',
+    'gateways' => [
+        'stripe' => [
+            'secret_key' => env('STRIPE_SECRET_KEY'),
+            'publishable_key' => env('STRIPE_PUBLISHABLE_KEY'),
+        ],
+        'paypal' => [
+            'client_id' => env('PAYPAL_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+            'sandbox' => env('PAYPAL_SANDBOX', true),
+        ],
+        'gocardless' => [
+            'access_token' => env('GOCARDLESS_ACCESS_TOKEN'),
+            'environment' => env('GOCARDLESS_ENVIRONMENT', 'sandbox'),
+        ],
+    ],
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="paisa-views"
 ```
 
 ## Usage
 
 ```php
-$paisa = new Manza\Paisa();
-echo $paisa->echoPhrase('Hello, Manza!');
+use Manza\Paisa\Facades\Paisa;
+use Manza\Paisa\PaymentGateways\Paypal\Enums\Status;
+
+// create a payment request
+$response = Paisa::make('paypal')
+            ->purchase([
+                'amount'    => '10.00',
+                'currency'  => 'GBP',
+                'returnUrl' => route('paypal.complete'),
+                'cancelUrl' => route('paypal.cancel'),
+            ]);
+
+// You have access to following methods
+$response->isRedirect();
+$response->getTransactionReference();
+$response->getRedirectUrl();
+
+// Check if the order can be captured
+$response = Paisa::make('paypal')
+      ->fetchTransaction([
+         'transactionReference' => $transactionReference
+      ]);
+      
+$orderDetails = $response->getData();
+
+if ($orderDetails['status'] !== Status::APPROVED) {
+    throw new \Exception('Order is not in a state that can be captured. Current state: ' . $orderDetails['status']);
+}
+
+Paisa::make('paypal')
+     ->complete([
+        'transactionReference' => $transactionReference
+     ])
+
 ```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Muhammad Ali Shah](https://github.com/ali)
-- [All Contributors](../../contributors)
 
 ## License
 

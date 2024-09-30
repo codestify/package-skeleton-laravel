@@ -2,10 +2,11 @@
 
 namespace Manza\Paisa\PaymentGateways\Paypal\Messages;
 
+use Manza\Paisa\Contracts\PaymentResponse;
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RequestInterface;
 
-class Response extends AbstractResponse
+class Response extends AbstractResponse implements PaymentResponse
 {
     protected mixed $statusCode;
 
@@ -25,12 +26,12 @@ class Response extends AbstractResponse
         return isset($this->data['links']) && $this->getRedirectUrl() !== null;
     }
 
-    public function getTransactionReference()
+    public function getTransactionReference(): mixed
     {
         return $this->data['id'] ?? null;
     }
 
-    public function getMessage()
+    public function getMessage(): ?string
     {
         if (isset($this->data['error_description'])) {
             return $this->data['error_description'];
@@ -43,12 +44,12 @@ class Response extends AbstractResponse
         return null;
     }
 
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->data['error'] ?? null;
     }
 
-    public function getRedirectUrl()
+    public function getRedirectUrl(): ?string
     {
         if (isset($this->data['links'])) {
             foreach ($this->data['links'] as $link) {

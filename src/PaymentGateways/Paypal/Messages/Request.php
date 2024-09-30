@@ -33,15 +33,6 @@ abstract class Request extends OmnipayAbstractRequest
 
     public function sendData($data): ResponseInterface|Response
     {
-        ray([
-            'method' => $this->getHttpMethod(),
-            'uri' => $this->getEndpoint().$this->getEndpointPath(),
-            'headers' => [
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Bearer '.$this->getAccessToken(),
-            ],
-            'body' => $data,
-        ]);
         try {
             $httpResponse = $this->httpClient->request(
                 method: $this->getHttpMethod(),

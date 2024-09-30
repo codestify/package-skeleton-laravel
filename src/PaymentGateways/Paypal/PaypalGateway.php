@@ -2,6 +2,7 @@
 
 namespace Manza\Paisa\PaymentGateways\Paypal;
 
+use Manza\Paisa\Contracts\PaymentGateway;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\AuthorizeOrderRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureAuthorizePaymentRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\CaptureOrderRequest;
@@ -14,22 +15,11 @@ use Manza\Paisa\PaymentGateways\Paypal\Messages\GetOrderRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\GetSubscriptionRequest;
 use Manza\Paisa\PaymentGateways\Paypal\Messages\RefundRequest;
 use Omnipay\Common\AbstractGateway;
-use Omnipay\Common\Http\ClientInterface;
 use Omnipay\Common\Message\AbstractRequest;
 use Omnipay\Common\Message\RequestInterface;
-use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
-final class PaypalGateway extends AbstractGateway
+final class PaypalGateway extends AbstractGateway implements PaymentGateway
 {
-    public function __construct(ClientInterface $httpClient = null, HttpRequest $httpRequest = null)
-    {
-        parent::__construct($httpClient, $httpRequest);
-        $this->initialize([
-            'clientId' => config('paisa.gateways.paypal.client_id'),
-            'secret' => config('paisa.gateways.paypal.client_secret'),
-            'testMode' => config('paisa.gateways.paypal.sandbox'),
-        ]);
-    }
 
     public function getName(): string
     {
@@ -75,44 +65,44 @@ final class PaypalGateway extends AbstractGateway
         return $this->setParameter('testMode', $value);
     }
 
-    public function purchase(array $options = []): RequestInterface|AbstractRequest
+    public function purchase(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(CreateOrderRequest::class, $options);
+        return $this->createRequest(CreateOrderRequest::class, $parameters);
     }
 
-    public function completePurchase(array $options = []): RequestInterface|AbstractRequest
+    public function completePurchase(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(CaptureOrderRequest::class, $options);
+        return $this->createRequest(CaptureOrderRequest::class, $parameters);
     }
 
-    public function authorize(array $options = []): RequestInterface|AbstractRequest
+    public function authorize(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(AuthorizeOrderRequest::class, $options);
+        return $this->createRequest(AuthorizeOrderRequest::class, $parameters);
     }
 
-    public function capture(array $options = []): RequestInterface|AbstractRequest
+    public function capture(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(CaptureAuthorizePaymentRequest::class, $options);
+        return $this->createRequest(CaptureAuthorizePaymentRequest::class, $parameters);
     }
 
-    public function refund(array $options = []): RequestInterface|AbstractRequest
+    public function refund(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(RefundRequest::class, $options);
+        return $this->createRequest(RefundRequest::class, $parameters);
     }
 
-    public function fetchTransaction(array $options = []): RequestInterface|AbstractRequest
+    public function fetchTransaction(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(FetchTransactionRequest::class, $options);
+        return $this->createRequest(FetchTransactionRequest::class, $parameters);
     }
 
-    public function getOrderDetails(array $options = []): RequestInterface|AbstractRequest
+    public function getOrderDetails(array $parameters = []): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(GetOrderRequest::class, $options);
+        return $this->createRequest(GetOrderRequest::class, $parameters);
     }
 
-    public function createPlan(array $options = array()): RequestInterface|AbstractRequest
+    public function createPlan(array $parameters = array()): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(CreatePlanRequest::class, $options);
+        return $this->createRequest(CreatePlanRequest::class, $parameters);
     }
 
     public function createSubscription(array $parameters = []): RequestInterface|AbstractRequest
@@ -125,8 +115,8 @@ final class PaypalGateway extends AbstractGateway
         return $this->createRequest(GetSubscriptionRequest::class, $parameters);
     }
 
-    public function createProduct(array $options = array()): RequestInterface|AbstractRequest
+    public function createProduct(array $parameters = array()): RequestInterface|AbstractRequest
     {
-        return $this->createRequest(CreateProductRequest::class, $options);
+        return $this->createRequest(CreateProductRequest::class, $parameters);
     }
 }
