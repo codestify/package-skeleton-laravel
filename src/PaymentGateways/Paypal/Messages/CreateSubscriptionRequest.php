@@ -2,11 +2,10 @@
 
 namespace Manza\Paisa\PaymentGateways\Paypal\Messages;
 
-use Omnipay\Common\Exception\InvalidRequestException;
-
 class CreateSubscriptionRequest extends Request
 {
     protected $liveEndpoint = 'https://api-m.paypal.com/v1';
+
     protected $testEndpoint = 'https://api-m.sandbox.paypal.com/v1';
 
     public function getData()
@@ -32,9 +31,8 @@ class CreateSubscriptionRequest extends Request
 
     protected function generateRequestId()
     {
-        return 'SUBSCRIPTION-' . date('dmY') . '-' . uniqid();
+        return 'SUBSCRIPTION-'.date('dmY').'-'.uniqid();
     }
-
 
     public function setPlanId($value)
     {
@@ -95,7 +93,6 @@ class CreateSubscriptionRequest extends Request
     {
         return $this->getParameter('application_context');
     }
-
 
     protected function getEndpointPath(): string
     {

@@ -5,6 +5,7 @@ namespace Manza\Paisa\PaymentGateways\Paypal\Messages;
 class GetSubscriptionRequest extends Request
 {
     protected $v1LiveEndpoint = 'https://api-m.paypal.com/v1';
+
     protected $v1TestEndpoint = 'https://api-m.sandbox.paypal.com/v1';
 
     public function getData(): array

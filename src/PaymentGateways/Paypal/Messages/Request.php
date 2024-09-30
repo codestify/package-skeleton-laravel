@@ -9,6 +9,7 @@ use Omnipay\Common\Message\ResponseInterface;
 abstract class Request extends OmnipayAbstractRequest
 {
     protected $liveEndpoint = 'https://api-m.paypal.com/v2';
+
     protected $testEndpoint = 'https://api-m.sandbox.paypal.com/v2';
 
     public function getClientId()
@@ -38,7 +39,7 @@ abstract class Request extends OmnipayAbstractRequest
                 method: $this->getHttpMethod(),
                 uri: $this->getEndpoint().$this->getEndpointPath(),
                 headers: [
-                    'Content-Type'  => 'application/json',
+                    'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer '.$this->getAccessToken(),
                 ],
                 body: $this->isDataValid($data) ? json_encode($data) : null,
@@ -72,10 +73,10 @@ abstract class Request extends OmnipayAbstractRequest
         $authString = base64_encode($this->getClientId().':'.$this->getSecret());
 
         $headers = [
-            'Accept'          => 'application/json',
+            'Accept' => 'application/json',
             'Accept-Language' => 'en_GB',
-            'Content-Type'    => 'application/x-www-form-urlencoded',
-            'Authorization'   => 'Basic '.$authString,
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Authorization' => 'Basic '.$authString,
         ];
 
         $body = 'grant_type=client_credentials';
@@ -91,7 +92,7 @@ abstract class Request extends OmnipayAbstractRequest
 
             $response = $this->decodeResponse($httpResponse);
 
-            if ( ! isset($response['access_token'])) {
+            if (! isset($response['access_token'])) {
                 throw new InvalidRequestException('Unable to obtain access token from PayPal. Response: '.json_encode($response));
             }
 
@@ -112,12 +113,10 @@ abstract class Request extends OmnipayAbstractRequest
 
     protected function isDataValid($data): bool
     {
-        return isset($data) && ( ! is_array($data) || ! empty($data));
+        return isset($data) && (! is_array($data) || ! empty($data));
     }
 
     /**
-     * @param  \Psr\Http\Message\ResponseInterface  $httpResponse
-     *
      * @return mixed|ResponseInterface
      */
     public function decodeResponse(\Psr\Http\Message\ResponseInterface $httpResponse): mixed

@@ -20,7 +20,6 @@ use Omnipay\Common\Message\RequestInterface;
 
 final class PaypalGateway extends AbstractGateway implements PaymentGateway
 {
-
     public function getName(): string
     {
         return 'PayPal REST V2';
@@ -100,7 +99,7 @@ final class PaypalGateway extends AbstractGateway implements PaymentGateway
         return $this->createRequest(GetOrderRequest::class, $parameters);
     }
 
-    public function createPlan(array $parameters = array()): RequestInterface|AbstractRequest
+    public function createPlan(array $parameters = []): RequestInterface|AbstractRequest
     {
         return $this->createRequest(CreatePlanRequest::class, $parameters);
     }
@@ -115,7 +114,7 @@ final class PaypalGateway extends AbstractGateway implements PaymentGateway
         return $this->createRequest(GetSubscriptionRequest::class, $parameters);
     }
 
-    public function createProduct(array $parameters = array()): RequestInterface|AbstractRequest
+    public function createProduct(array $parameters = []): RequestInterface|AbstractRequest
     {
         return $this->createRequest(CreateProductRequest::class, $parameters);
     }

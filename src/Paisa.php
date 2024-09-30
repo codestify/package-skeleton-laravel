@@ -8,6 +8,7 @@ use Omnipay\Common\Message\ResponseInterface;
 class Paisa
 {
     protected PaymentGateway $gateway;
+
     protected PaisaManager $manager;
 
     public function __construct(PaisaManager $manager)
@@ -15,7 +16,7 @@ class Paisa
         $this->manager = $manager;
     }
 
-    public function make(string $driver = null): self
+    public function make(?string $driver = null): self
     {
         $this->gateway = $this->manager->driver($driver);
 

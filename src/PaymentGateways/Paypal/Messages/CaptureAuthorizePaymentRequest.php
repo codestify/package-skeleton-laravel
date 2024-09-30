@@ -7,12 +7,12 @@ class CaptureAuthorizePaymentRequest extends Request
     public function getData(): array
     {
         $this->validate('transactionReference');
+
         return [];
     }
 
     protected function getEndpointPath(): string
     {
-        return '/payments/authorizations/' . $this->getTransactionReference() . '/capture';
+        return '/payments/authorizations/'.$this->getTransactionReference().'/capture';
     }
-
 }

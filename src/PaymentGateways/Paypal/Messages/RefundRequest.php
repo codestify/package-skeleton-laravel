@@ -22,6 +22,6 @@ class RefundRequest extends Request
 
     protected function getEndpointPath(): string
     {
-        return '/payments/captures/' . $this->getTransactionReference() . '/refund';
+        return '/payments/captures/'.$this->getTransactionReference().'/refund';
     }
 }

@@ -19,6 +19,7 @@ class PaisaServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(Paisa::class, function ($app) {
             $manager = $app->make(PaisaManager::class);
+
             return new Paisa($manager);
         });
     }

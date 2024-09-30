@@ -5,14 +5,16 @@ namespace Manza\Paisa\PaymentGateways\Paypal\Messages;
 class CreateProductRequest extends Request
 {
     protected $v1LiveEndpoint = 'https://api-m.paypal.com/v1';
+
     protected $v1TestEndpoint = 'https://api-m.sandbox.paypal.com/v1';
+
     public function getData()
     {
         $this->validate('name', 'type');
 
         return [
-            'name'        => $this->getName(),
-            'type'        => $this->getType(),
+            'name' => $this->getName(),
+            'type' => $this->getType(),
             'description' => $this->getDescription(),
         ];
     }

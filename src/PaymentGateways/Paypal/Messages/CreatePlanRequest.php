@@ -5,6 +5,7 @@ namespace Manza\Paisa\PaymentGateways\Paypal\Messages;
 class CreatePlanRequest extends Request
 {
     protected string $v1LiveEndpoint = 'https://api-m.paypal.com/v1';
+
     protected string $v1TestEndpoint = 'https://api-m.sandbox.paypal.com/v1';
 
     public function getProductId(): string
@@ -47,7 +48,7 @@ class CreatePlanRequest extends Request
         return $this->setParameter('billing_cycles', $value);
     }
 
-    public function getPaymentPreferences(): null|array
+    public function getPaymentPreferences(): ?array
     {
         return $this->getParameter('payment_preferences');
     }
@@ -57,7 +58,7 @@ class CreatePlanRequest extends Request
         return $this->setParameter('payment_preferences', $value);
     }
 
-    public function getTaxes(): null|array
+    public function getTaxes(): ?array
     {
         return $this->getParameter('taxes');
     }
@@ -91,5 +92,4 @@ class CreatePlanRequest extends Request
     {
         return '/billing/plans';
     }
-
 }
